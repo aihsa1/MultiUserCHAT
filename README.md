@@ -13,7 +13,7 @@ If you desire to use this on a Linux machine, you need to install "getch" from t
 Alternatively, you may use the command: ```pip install getch```
 
 * KBHIT() - 
-You may use via [this code](https://www.mail-archive.com/linux-il@cs.huji.ac.il/msg66473.html) or [this gist](https://gist.github.com/michelbl/efda48b19d3e587685e3441a74457024)
+You may use via [this code](https://www.mail-archive.com/linux-il@cs.huji.ac.il/msg66473.html) or [this gist](https://gist.github.com/michelbl/efda48b19d3e587685e3441a74457024) if you are on a Linux machine. No need to install on Windows.
 
 -----------------------
 # User Guide
