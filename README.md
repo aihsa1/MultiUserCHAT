@@ -1,4 +1,4 @@
-# MultiUserCHAT - CLI Version
+# Multi User Chat - CLI Version
 ## Made by Ran David
 ----------------------------------
 # Description
