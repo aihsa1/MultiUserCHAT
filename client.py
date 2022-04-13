@@ -5,6 +5,7 @@ import os
 import re
 import msvcrt
 import time
+import argparse
 
 input_lst = []
 
@@ -15,13 +16,24 @@ def initial_connection():
     :return: client's socket and name
     :rtype: tuple
     """
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--name", help="name of the client",
+                        type=str, required=True)
+    parser.add_argument("--ip", help="IP address of the server",
+                        default="127.0.0.1")
+    args = parser.parse_args()
+
+    PORT = 12345
+
     try:
-        name = sys.argv[1]  # name
+        # name = sys.argv[1]  # name
+        name = args.name
+        IP = args.ip
     except:
-        print("Enter your name when you run the client")
+        print("Enter your name and IP when you run the client")
         sys.exit(0)
-    if len(re.findall(r"[!@\s]", " ".join(sys.argv[1:]))) > 0:
-        print("ERROR:A valid name cannot start with @ nor contain of whitespaces nor exclamation mark")
+    if len(re.findall(r"[!@\s]", name)) > 0:
+        print("ERROR:A valid name cannot contain @, whitespaces nor exclamation marks")
         sys.exit(0)
 
     if os.name == "nt":
@@ -31,9 +43,6 @@ def initial_connection():
 
     with open("client_welcome.txt", "r") as f:
         print(r"{}".format(f.read()))
-
-    IP = "127.0.0.1"
-    PORT = 12345
 
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
@@ -106,39 +115,45 @@ def write(client_socket, name):
     stay = True
     while stay:
         input_chars()
-        command = "".join(input_lst).replace(",", "\n")  # replace comma with newline (comma is a special character)
+        # replace comma with newline (comma is a special character)
+        command = "".join(input_lst).replace(",", "\n")
         if command == "quit":
             code = 1
             stay = not stay
-            data = ",".join([str(len(name)), name, str(code), str(len(command)), command])
+            data = ",".join([str(len(name)), name, str(
+                code), str(len(command)), command])
         elif command.startswith("inviteMan"):
             code = 2
             if " " in command:
                 name2 = command.split(" ", 1)[1]
             else:
                 name2 = ""
-            data = ",".join([str(len(name)), name, str(code), str(len(name2)), name2])
+            data = ",".join(
+                [str(len(name)), name, str(code), str(len(name2)), name2])
         elif command.startswith("getout"):
             code = 3
             if " " in command:
                 name2 = command.split(" ", 1)[1]
             else:
                 name2 = ""
-            data = ",".join([str(len(name)), name, str(code), str(len(name2)), name2])
+            data = ",".join(
+                [str(len(name)), name, str(code), str(len(name2)), name2])
         elif len(re.findall(r"^shsh\b", command)) > 0:
             code = 4
             if " " in command:
                 name2 = command.split(" ", 1)[1]
             else:
                 name2 = ""
-            data = ",".join([str(len(name)), name, str(code), str(len(name2)), name2])
+            data = ",".join(
+                [str(len(name)), name, str(code), str(len(name2)), name2])
         elif command == "view-managers":
             code = 5
             data = ",".join([str(len(name)), name, str(code)])
         else:
             # valid for public messages and private messages
             code = 1
-            data = ",".join([str(len(name)), name, str(code), str(len(command)), command])
+            data = ",".join([str(len(name)), name, str(
+                code), str(len(command)), command])
         client_socket.send(data.encode())
 
     client_socket.close()
@@ -152,12 +167,14 @@ def main():
     """
     client_socket, name = initial_connection()
 
-    t_write = threading.Thread(target=write, args=(client_socket, name), daemon=True)
+    t_write = threading.Thread(target=write, args=(
+        client_socket, name), daemon=True)
     t_write.start()
 
     while t_write.is_alive():
         try:
-            data = client_socket.recv(1024).decode().split(",")[1].replace("\n", ",")
+            data = client_socket.recv(1024).decode().split(",")[
+                1].replace("\n", ",")
         except:
             # disconnected from the server
             sys.exit(0)
